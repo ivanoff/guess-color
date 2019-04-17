@@ -1,5 +1,12 @@
 # guess-color changelog
 
+## [5.1.0](http://github.com/ivanoff/guess-color/tree/5.1.0) (2019-04-15)
+[Full Changelog](http://github.com/ivanoff/guess-color/compare/5.0.2...5.1.0)
+
+**What Was Done:**
+
+- audit
+
 ## [5.0.2](http://github.com/ivanoff/guess-color/tree/5.0.2) (2019-04-14)
 [Full Changelog](http://github.com/ivanoff/guess-color/compare/3.1.0...5.0.2)
 
