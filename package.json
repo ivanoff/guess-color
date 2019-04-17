@@ -1,17 +1,26 @@
 {
   "name": "guess-color",
-  "version": "3.1.0",
+  "version": "5.0.2",
   "description": "Guess Color",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha"
+    "test": "mocha",
+    "coverage": "nyc mocha",
+    "lint": "eslint . --cache --ignore-pattern .gitignore",
+    "fix": "eslint . --ignore-pattern .gitignore --fix"
   },
+  "pre-commit": [
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ivanoff/guess-color.git"
   },
   "keywords": [
-    "Color"
+    "Color",
+    "Find collor",
+    "Guess color",
+    "AI"
   ],
   "author": "Dimitry Ivanov <2@ivanoff.org.ua> # curl -A cv ivanoff.org.ua",
   "license": "MIT",
@@ -20,10 +29,14 @@
   },
   "homepage": "https://github.com/ivanoff/guess-color",
   "devDependencies": {
-    "chai": "^3.3.0",
-    "coveralls": "^2.11.15",
-    "istanbul": "^0.4.5",
-    "mocha": "^2.3.3"
+    "chai": "^3.5.0",
+    "coveralls": "^3.0.3",
+    "eslint": "^5.12.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.15.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.0",
+    "pre-commit": "^1.2.2"
   },
   "dependencies": {
     "sharp": "^0.18.2"

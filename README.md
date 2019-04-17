@@ -12,7 +12,7 @@
 
 ### Guess Color
 
- v3.1.0
+ v5.0.2
 
 
 ## Installation
@@ -24,18 +24,17 @@
 ```javascript
 var color = require('guess-color');
 
-console.log( color.guess( '#000000' ) ); // Black
+console.log( color( '#000000' ) ); // Black
 
-console.log( color.guess( [128, 128, 128] ) ); // Grey
+console.log( color( [128, 128, 128] ) ); // Grey
 
-console.log( color.guess( {r:75, g:0, b:130} ) ); // Indigo
+console.log( color( {r:75, g:0, b:130} ) ); // Indigo
 
-console.log( color.guessByName( 'Black' ) ); // [ 0, 0, 0 ]
+console.log( color( 'Black' ) ); // [ 0, 0, 0 ]
 
-color.guessByImage('./test/static/test.png', (err, res) => {
+color().guessByImage('./test/static/test.png').then( res => {
   console.log( res ); // [ [ 'SteelBlue', [ 70, 130, 180 ], '1.00' ] ]
 });
-
 
 ```
 

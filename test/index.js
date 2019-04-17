@@ -1,160 +1,82 @@
-'use strict';
+const { describe, it } = require('mocha');
+const { expect } = require('chai');
+const color = require('../src');
 
-const should = require('chai').should();
-const color = require('../');
-
-describe('sync guess by values', function () {
-
-  describe('hex #000000', function () {
-    it('check black', function (done) {
-      color.guess('#000000').should.eql('Black');
-      done();
-    });
-  });
-
-  describe('array [0, 0, 0]', function () {
-    it('check black', function (done) {
-      color.guess([0, 0, 0]).should.eql('Black');
-      done();
-    });
-  });
-
-  describe('object { r: 0, g: 0, b: 0 }', function () {
-    it('check black', function (done) {
-      color.guess({ r: 0, g: 0, b: 0 }).should.eql('Black');
-      done();
-    });
-  });
-
+describe('guess black by values', () => {
+  it('hex #000000', () => expect(color('#000000')).eql('Black'));
+  it('array [0, 0, 0]', () => expect(color([0, 0, 0])).eql('Black'));
+  it('object { r: 0, g: 0, b: 0 }', () => expect(color({ r: 0, g: 0, b: 0 })).eql('Black'));
 });
 
-describe('async guess by values', function () {
-
-  describe('hex #000000', function () {
-    it('check black', function (done) {
-      color.guess('#000000', (err, res) => {
-        res.should.eql('Black');
-        done();
-      });
-    });
-  });
-
-  describe('array [0, 0, 0]', function () {
-    it('check black', function (done) {
-      color.guess([0, 0, 0], (err, res) => {
-        res.should.eql('Black');
-        done();
-      });
-    });
-  });
-
-  describe('object { r: 0, g: 0, b: 0 }', function () {
-    it('check black', function (done) {
-      color.guess({ r: 0, g: 0, b: 0 }, (err, res) => {
-        res.should.eql('Black');
-        done();
-      });
-    });
-  });
-
+describe('guess by name', () => {
+  it('test Black', () => expect(color('Black')).eql([0, 0, 0]));
+  it('test SteelBlue', () => expect(color('SteelBlue')).eql([70, 130, 180]));
 });
 
-describe('guess by name', function () {
-  it('test Black', function (done) {
-    color.guessByName('Black', (err, res) => {
-      res.should.eql([0, 0, 0]);
-      done();
-    });
+describe('find colors in image file', () => {
+  it('test.png is SteelBlue', async () => {
+    const res = await color().guessByImage('./test/static/test.png');
+    expect(res).eql([['SteelBlue', [70, 130, 180], 1]]);
   });
-  it('test SteelBlue', function (done) {
-    let res = color.guessByName('SteelBlue');
-    res.should.eql([70, 130, 180]);
-    done();
+
+  it('black.png is mostly Black', async () => {
+    const res = await color().guessByImage('./test/static/black.png');
+    expect(res).eql([
+      ['Black', [0, 0, 0], 0.96],
+      ['DarkSlateGray', [47, 79, 79], 0.02],
+      ['White', [255, 255, 255], 0.01],
+      ['Maroon', [128, 0, 0], 0],
+      ['DarkSlateBlue', [72, 61, 139], 0],
+      ['Azure', [240, 255, 255], 0],
+      ['Khaki', [240, 230, 140], 0],
+      ['MidnightBlue', [25, 25, 112], 0],
+    ]);
   });
 });
 
-describe('image', function () {
-
-  describe('static/ folder', function () {
-    it('test.png is SteelBlue', function (done) {
-      color.guessByImage('./test/static/test.png', (err, res) => {
-        res.should.eql([['SteelBlue', [70, 130, 180], '1.00']]);
-        done();
-      });
-    });
-
-    it('black.png is Black', function (done) {
-      color.guessByImage('./test/static/black.png', (err, res) => {
-        res.should.eql(
-          [['Black', [0, 0, 0], '0.96'],
-            ['Maroon', [128, 0, 0], '0.00'],
-            ['DarkSlateBlue', [72, 61, 139], '0.00'],
-            ['Azure', [240, 255, 255], '0.00'],
-            ['White', [255, 255, 255], '0.01'],
-            ['LightSalmon', [255, 160, 122], '0.00'],
-            ['DarkSlateGray', [47, 79, 79], '0.02'],
-            ['DarkOliveGreen', [85, 107, 47], '0.00'],]
-          );
-        done();
-      });
-    });
-  });
-
-});
-
-describe('error', function () {
-
-  it('check nothing', function (done) {
+describe('errors', () => {
+  it('check nothing', () => {
     try {
-      color.guess();
+      color();
+    } catch (result) {
+      expect(result instanceof Error).equal(true);
+      expect(String(result)).match(/^Error: Color must to be/);
     }
-    catch (result) {
-      (result instanceof Error).should.equal(true);
-      String(result).should.match(/^Error: Color must be/);
-    }
-
-    done();
   });
 
-  it('check empty array', function (done) {
+  it('check zero', () => {
     try {
-      color.guess([]);
+      color(0);
+    } catch (result) {
+      expect(result instanceof Error).equal(true);
+      expect(String(result)).match(/^Error: Color must to be/);
     }
-    catch (result) {
-      (result instanceof Error).should.equal(true);
-      String(result).should.match(/^Error: Color must be/);
-    }
-
-    done();
   });
 
-  it('find imagine color', function (done) {
+  it('check empty array', () => {
     try {
-      color.guessByName('SteelBlueDarkRedYellow');
+      color([]);
+    } catch (result) {
+      expect(result instanceof Error).equal(true);
+      expect(String(result)).match(/^Error: Color must to be/);
     }
-    catch (err) {
-      (err instanceof Error).should.equal(true);
-      String(err).should.match(/^Error: Color not found/);
+  });
+
+  it('non existent color', () => {
+    try {
+      color('SteelBlueDarkRedYellow');
+    } catch (err) {
+      expect(err instanceof Error).equal(true);
+      expect(String(err)).match(/^Error: Color not found/);
     }
-
-    done();
   });
 
-  it('find imagine color async', function (done) {
-    color.guessByName('SteelBlueDarkRedYellow', (err, result) => {
-      err.should.match(/^Error: Color not found/);
-      done();
-    })
+  it('file not exists', async () => {
+    try {
+      await color().guessByImage('./test/static/no.png');
+    } catch (err) {
+      expect(err instanceof Error).equal(true);
+      expect(String(err)).match(/^Error: Input file is missing/);
+    }
   });
-
-  describe('static/ folder', function () {
-    it('no.png not exists', function (done) {
-      color.guessByImage('./test/static/no.png', (err, res) => {
-        (err instanceof Error).should.equal(true);
-        String(err).should.match(/^Error: Input file is missing/);
-        done();
-      });
-    });
-  });
-
 });
