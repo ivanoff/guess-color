@@ -42,8 +42,7 @@ function guess(whatIsIt) {
 async function guessByImage(path) {
   return new Promise((resolve, reject) => {
     sharp(path)
-      .resize(100, 100)
-      .max()
+      .resize(100, 100, { fit: sharp.fit.inside })
       .raw()
       .toBuffer((err, buf) => {
         if (err) return reject(err);

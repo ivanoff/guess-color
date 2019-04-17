@@ -8,8 +8,7 @@
     "exclude": [
       "coverage",
       "test",
-      "example.js",
-      "config.js"
+      ".eslintrc.js"
     ],
     "reporter": [
       "html",

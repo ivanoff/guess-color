@@ -35,10 +35,10 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.15.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.3.0",
+    "nyc": "^14.0.0",
     "pre-commit": "^1.2.2"
   },
   "dependencies": {
-    "sharp": "^0.18.2"
+    "sharp": "^0.22.0"
   }
 }
