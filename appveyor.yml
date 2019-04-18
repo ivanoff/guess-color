@@ -9,6 +9,10 @@ environment:
     - nodejs_version: "10"
     - nodejs_version: "11"
 
+platform:
+  - x64
+  - Any CPU
+
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node 0.STABLE.latest
