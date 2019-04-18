@@ -12,7 +12,7 @@
 
 ### Guess Color
 
- v5.1.0
+ v6.0.2
 
 
 ## Installation
@@ -34,6 +34,10 @@ console.log( color( 'Black' ) ); // [ 0, 0, 0 ]
 
 color().guessByImage('./test/static/test.png').then( res => {
   console.log( res ); // [ [ 'SteelBlue', [ 70, 130, 180 ], '1.00' ] ]
+});
+
+color().imageByName('Blue', 'blue.jpg').then( () => {
+  console.log( 'blue file created' );
 });
 
 ```
