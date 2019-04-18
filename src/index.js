@@ -1,4 +1,4 @@
-const sharp = require('sharp');
+const Jimp = require('jimp');
 const colors = require('./colors.json');
 
 function guess(whatIsIt) {
@@ -13,9 +13,11 @@ function guess(whatIsIt) {
     color = m.map(item => parseInt(item, 16)).slice(1);
   }
 
-  const { r, g, b } = color || {};
-  if ([r, g, b].filter(Number.isInteger).length) {
-    color = [r, g, b];
+  if (Object.prototype.hasOwnProperty.call(whatIsIt, 'r')) {
+    const { r, g, b } = whatIsIt;
+    if ([r, g, b].filter(Number.isInteger).length) {
+      color = [r, g, b];
+    }
   }
 
   if (!Array.isArray(color) || color.length !== 3) {
@@ -41,36 +43,45 @@ function guess(whatIsIt) {
 
 async function guessByImage(path) {
   return new Promise((resolve, reject) => {
-    sharp(path)
-      .resize(100, 100, { fit: sharp.fit.inside })
-      .raw()
-      .toBuffer((err, buf) => {
-        if (err) return reject(err);
+    Jimp.read(path, (err, image) => {
+      if (err) return reject(err);
 
-        const colorsCache = {};
-        const colorsCounter = {};
-        const match = buf.toString('hex').match(/[0-9a-z]{6}/ig);
+      const colorsCache = {};
+      const colorsCounter = {};
 
-        for (const toCheck of match) {
-          if (!colorsCache[toCheck]) {
-            colorsCache[toCheck] = guess(`#${toCheck}`);
-          }
-          if (!colorsCounter[colorsCache[toCheck]]) {
-            colorsCounter[colorsCache[toCheck]] = 0;
-          }
-          colorsCounter[colorsCache[toCheck]]++;
+      image.resize(500, 500, Jimp.RESIZE_NEAREST_NEIGHBOR);
+
+      const { width, height, data } = image.bitmap;
+      image.scan(0, 0, width, height, (x, y, idx) => {
+        const [r, g, b] = data.slice(idx);
+        const key = `${r}-${g}-${b}`;
+        if (!colorsCache[key]) {
+          colorsCache[key] = guess([r, g, b]);
         }
-
-        const result = [];
-        for (const colorName of Object.keys(colorsCounter)) {
-          const colorData = guess(colorName);
-          const weight = parseFloat((colorsCounter[colorName] / match.length).toFixed(2));
-          result.push([colorName, colorData, weight]);
+        if (!colorsCounter[colorsCache[key]]) {
+          colorsCounter[colorsCache[key]] = 0;
         }
-
-        return resolve(result.sort((a, b) => b[2] - a[2]));
+        colorsCounter[colorsCache[key]]++;
       });
+
+      const result = [];
+      for (const colorName of Object.keys(colorsCounter)) {
+        const colorData = guess(colorName);
+        const weight = parseFloat((colorsCounter[colorName] / (width * height)).toFixed(4));
+        result.push([colorName, colorData, weight]);
+      }
+
+      return resolve(result.sort((a, b) => b[2] - a[2]));
+    });
   });
 }
 
-module.exports = name => (typeof name !== 'undefined' ? guess(name) : { guess, guessByImage });
+async function imageByName(name, fileName) {
+  const color = guess(name).map(item => (`00${item.toString(16)}`).slice(-2)).join('');
+  return new Promise((resolve) => {
+    const image = new Jimp(100, 100, `#${color}`);
+    resolve(fileName ? image.writeAsync(fileName) : image);
+  });
+}
+
+module.exports = name => (typeof name !== 'undefined' ? guess(name) : { guess, guessByImage, imageByName });

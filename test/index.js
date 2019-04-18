@@ -1,19 +1,21 @@
-const { describe, it } = require('mocha');
+const { describe, it, after } = require('mocha');
 const { expect } = require('chai');
+const fs = require('fs');
+const path = require('path');
 const color = require('../src');
 
-describe('guess black by values', () => {
+describe('Guess black by values', () => {
   it('hex #000000', () => expect(color('#000000')).eql('Black'));
   it('array [0, 0, 0]', () => expect(color([0, 0, 0])).eql('Black'));
   it('object { r: 0, g: 0, b: 0 }', () => expect(color({ r: 0, g: 0, b: 0 })).eql('Black'));
 });
 
-describe('guess by name', () => {
+describe('Guess by name', () => {
   it('test Black', () => expect(color('Black')).eql([0, 0, 0]));
   it('test SteelBlue', () => expect(color('SteelBlue')).eql([70, 130, 180]));
 });
 
-describe('find colors in image file', () => {
+describe('Find colors in image file', () => {
   it('test.png is SteelBlue', async () => {
     const res = await color().guessByImage('./test/static/test.png');
     expect(res).eql([['SteelBlue', [70, 130, 180], 1]]);
@@ -22,19 +24,48 @@ describe('find colors in image file', () => {
   it('black.png is mostly Black', async () => {
     const res = await color().guessByImage('./test/static/black.png');
     expect(res).eql([
-      ['Black', [0, 0, 0], 0.96],
-      ['DarkSlateGray', [47, 79, 79], 0.02],
-      ['White', [255, 255, 255], 0.01],
-      ['Maroon', [128, 0, 0], 0],
-      ['DarkSlateBlue', [72, 61, 139], 0],
-      ['Azure', [240, 255, 255], 0],
-      ['Khaki', [240, 230, 140], 0],
-      ['MidnightBlue', [25, 25, 112], 0],
+      ['Black', [0, 0, 0], 0.9586],
+      ['DarkSlateGray', [47, 79, 79], 0.0169],
+      ['White', [255, 255, 255], 0.0121],
+      ['Maroon', [128, 0, 0], 0.0026],
+      ['DarkSlateBlue', [72, 61, 139], 0.0024],
+      ['Azure', [240, 255, 255], 0.0024],
+      ['Khaki', [240, 230, 140], 0.0024],
+      ['MidnightBlue', [25, 25, 112], 0.0024],
     ]);
   });
 });
 
-describe('errors', () => {
+describe('File by color name', () => {
+  const fileName = path.join(__dirname, 'temp.jpg');
+
+  after(() => {
+    fs.unlinkSync(fileName);
+  });
+
+  it('black', async () => {
+    const name = 'Black';
+    await color().imageByName(name, fileName);
+    const res = await color().guessByImage(fileName);
+    expect(res).eql([[name, color(name), 1]]);
+  });
+
+  it('DarkSlateBlue', async () => {
+    const name = 'DarkSlateBlue';
+    await color().imageByName(name, fileName);
+    const res = await color().guessByImage(fileName);
+    expect(res).eql([[name, color(name), 1]]);
+  });
+
+  it('Yellow, no store to file', async () => {
+    const name = 'Pink';
+    const image = await color().imageByName(name);
+    const [r, g, b] = image.bitmap.data;
+    expect([r, g, b]).eql(color(name));
+  });
+});
+
+describe('Errors', () => {
   it('check nothing', () => {
     try {
       color();
@@ -62,6 +93,24 @@ describe('errors', () => {
     }
   });
 
+  it('check empty object', () => {
+    try {
+      color({});
+    } catch (result) {
+      expect(result instanceof Error).equal(true);
+      expect(String(result)).match(/^Error: Color must to be/);
+    }
+  });
+
+  it('check object with r key', () => {
+    try {
+      color({ r: 'key' });
+    } catch (result) {
+      expect(result instanceof Error).equal(true);
+      expect(String(result)).match(/^Error: Color must to be/);
+    }
+  });
+
   it('non existent color', () => {
     try {
       color('SteelBlueDarkRedYellow');
@@ -76,7 +125,7 @@ describe('errors', () => {
       await color().guessByImage('./test/static/no.png');
     } catch (err) {
       expect(err instanceof Error).equal(true);
-      expect(String(err)).match(/^Error: Input file is missing/);
+      expect(String(err)).match(/^Error: ENOENT: no such file or directory/);
     }
   });
 });
