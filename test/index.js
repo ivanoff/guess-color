@@ -60,8 +60,42 @@ describe('File by color name', () => {
   it('Yellow, no store to file', async () => {
     const name = 'Pink';
     const image = await color().imageByName(name);
-    const [r, g, b] = image.bitmap.data;
+    const [r, g, b] = image.data;
     expect([r, g, b]).eql(color(name));
+  });
+});
+
+describe('Set Palette', () => {
+  it('get name palattes', async () => {
+    const names = color().paletteNames();
+    expect(names).eql(['web', 'bw']);
+  });
+
+  it('set bw palette', () => {
+    color().setPalette('bw');
+  });
+
+  it('get palette', () => {
+    const palette = color().getPalette();
+    expect(palette).eql({ Black: [0, 0, 0], White: [255, 255, 255] });
+  });
+
+  it('set default palette', () => {
+    color().setPalette();
+  });
+
+  it('Default palette has red color', () => {
+    const palette = color().getPalette();
+    expect(palette.Red).eql([255, 0, 0]);
+  });
+
+  it('set default palette in case of unknown palette', () => {
+    color().setPalette('none');
+  });
+
+  it('Default palette has green color', () => {
+    const palette = color().getPalette();
+    expect(palette.Green).eql([0, 128, 0]);
   });
 });
 

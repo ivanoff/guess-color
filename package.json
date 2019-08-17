@@ -1,6 +1,6 @@
 {
   "name": "guess-color",
-  "version": "6.0.2",
+  "version": "7.1.1",
   "description": "Guess Color",
   "main": "src/index.js",
   "scripts": {
@@ -39,6 +39,7 @@
     "pre-commit": "^1.2.2"
   },
   "dependencies": {
+    "image-js": "^0.21.6",
     "jimp": "^0.6.1"
   }
 }

@@ -1,5 +1,15 @@
 # guess-color changelog
 
+## [7.1.1](http://github.com/ivanoff/guess-color/tree/7.1.1) (2019-08-16)
+[Full Changelog](http://github.com/ivanoff/guess-color/compare/5.1.1...7.1.1)
+
+**What Was Done:**
+
+- use image-js module for react native compatibility
+- you can change palette
+- add bw color schema
+- add options to guessByImage
+
 ## [5.1.0](http://github.com/ivanoff/guess-color/tree/5.1.0) (2019-04-15)
 [Full Changelog](http://github.com/ivanoff/guess-color/compare/5.0.2...5.1.0)
 
