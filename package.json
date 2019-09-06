@@ -1,6 +1,6 @@
 {
   "name": "guess-color",
-  "version": "7.1.2",
+  "version": "7.2.2",
   "description": "Guess Color",
   "main": "src/index.js",
   "scripts": {
@@ -29,17 +29,17 @@
   },
   "homepage": "https://github.com/ivanoff/guess-color",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "coveralls": "^3.0.3",
-    "eslint": "^5.12.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.15.0",
-    "mocha": "^5.2.0",
-    "nyc": "^14.0.0",
+    "chai": "^4.2.0",
+    "coveralls": "^3.0.6",
+    "eslint": "^6.3.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "mocha": "^6.2.0",
+    "nyc": "^14.1.1",
     "pre-commit": "^1.2.2"
   },
   "dependencies": {
-    "image-js": "^0.21.6",
-    "jimp": "^0.6.1"
+    "image-js": "^0.21.7",
+    "jimp": "^0.7.0"
   }
 }

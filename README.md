@@ -12,7 +12,7 @@
 
 ### Guess Color
 
- v7.1.2
+ v7.2.2
 
 
 ## Installation

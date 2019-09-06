@@ -14,7 +14,7 @@ function guess(whatIsIt) {
     const m = whatIsIt.match(/^#([\da-z]{2})([\da-z]{2})([\da-z]{2})$/i);
     if (!m) throw new Error('Color not found');
 
-    color = m.map(item => parseInt(item, 16)).slice(1);
+    color = m.map((item) => parseInt(item, 16)).slice(1);
   }
 
   if (Object.prototype.hasOwnProperty.call(whatIsIt, 'r')) {
@@ -33,7 +33,7 @@ function guess(whatIsIt) {
 
   for (const name of Object.keys(colors)) {
     const c = colors[name];
-    const p = i => (c[i] - color[i]) ** 2;
+    const p = (i) => (c[i] - color[i]) ** 2;
     const distance = Math.sqrt(p(0) + p(1) + p(2));
 
     if (minDistance > distance) {
@@ -95,6 +95,6 @@ function paletteNames() {
   return Object.keys(allColors);
 }
 
-module.exports = name => (typeof name !== 'undefined' ? guess(name) : {
+module.exports = (name) => (typeof name !== 'undefined' ? guess(name) : {
   guess, guessByImage, imageByName, setPalette, getPalette, paletteNames,
 });
