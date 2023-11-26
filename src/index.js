@@ -95,6 +95,6 @@ function paletteNames() {
   return Object.keys(allColors);
 }
 
-module.exports = (name) => (typeof name !== 'undefined' ? guess(name) : {
+module.exports = {
   guess, guessByImage, imageByName, setPalette, getPalette, paletteNames,
-});
+};
