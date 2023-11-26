@@ -12,9 +12,6 @@
 
 ### Guess Color
 
- v7.2.2
-
-
 ## Installation
 ```npm i -S guess-color```
 
