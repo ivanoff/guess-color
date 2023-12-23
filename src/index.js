@@ -5,7 +5,27 @@ const allColors = require('./colors');
 
 let colors = allColors[defaultColor];
 
-function guess(whatIsIt) {
+let colorGroups;
+
+function updateColorGroups() {
+  colorGroups = {};
+  for (const key of Object.keys(colors)) {
+    const [a, b, c] = colors[key];
+    const s = Math.trunc((a + b + c) / 50);
+
+    if (!colorGroups[`${s}`]) colorGroups[`${s}`] = {};
+    colorGroups[`${s}`][key] = colors[key];
+    if (!colorGroups[`${s - 1}`]) colorGroups[`${s - 1}`] = {};
+    colorGroups[`${s - 1}`][key] = colors[key];
+    if (!colorGroups[`${s + 1}`]) colorGroups[`${s + 1}`] = {};
+    colorGroups[`${s + 1}`][key] = colors[key];
+  }
+}
+updateColorGroups();
+
+const colorsGlobalCache = {};
+
+function guess(whatIsIt, { useCache, useGroups } = {}) {
   let color = whatIsIt;
 
   if (typeof whatIsIt === 'string') {
@@ -28,11 +48,18 @@ function guess(whatIsIt) {
     throw new Error('Color must to be string ("#00FF8F"), array ([0,255,146]) or object ({r:0, g:255, b:146})');
   }
 
+  const cacheKey = color.join('-');
+  if (useCache && colorsGlobalCache[cacheKey]) return colorsGlobalCache[cacheKey];
+
   let result;
   let minDistance = Infinity;
 
-  for (const name of Object.keys(colors)) {
-    const c = colors[name];
+  const s = Math.trunc((color[0] + color[1] + color[2]) / 50);
+
+  const cc = useGroups ? colorGroups[`${s}`] : colors;
+
+  for (const name of Object.keys(cc)) {
+    const c = cc[name];
     const p = (i) => (c[i] - color[i]) ** 2;
     const distance = Math.sqrt(p(0) + p(1) + p(2));
 
@@ -42,16 +69,23 @@ function guess(whatIsIt) {
     }
   }
 
+  if (useCache) colorsGlobalCache[cacheKey] = result;
+
   return result;
 }
 
-async function guessByImage(path, { width = 500, height = 500 } = {}) {
+async function guessByImage(path, {
+  width, height, useCache, useGroups,
+} = {}) {
   const image = await Image.load(path);
 
   const colorsCache = {};
   const colorsCounter = {};
 
-  const data = image.resize({ width, height }).getPixelsArray();
+  const w = width || image.width;
+  const h = height || image.height;
+
+  const data = width ? image.resize({ width, height }).getPixelsArray() : image.getPixelsArray();
 
   for (const [r, g, b] of data) {
     const key = `${r}-${g}-${b}`;
@@ -66,8 +100,8 @@ async function guessByImage(path, { width = 500, height = 500 } = {}) {
 
   const result = [];
   for (const colorName of Object.keys(colorsCounter)) {
-    const colorData = guess(colorName);
-    const weight = parseFloat((colorsCounter[colorName] / (width * height)).toFixed(4));
+    const colorData = guess(colorName, { useCache, useGroups });
+    const weight = parseFloat((colorsCounter[colorName] / (w * h)).toFixed(4));
     result.push([colorName, colorData, weight]);
   }
 
@@ -85,6 +119,7 @@ function imageByName(name, fileName) {
 
 function setPalette(name = defaultColor) {
   colors = allColors[name] || colors;
+  updateColorGroups();
 }
 
 function getPalette() {

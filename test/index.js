@@ -24,7 +24,7 @@ describe('Find colors in image file', () => {
   it('black.png is mostly Black', async () => {
     const res = await color.guessByImage('./test/static/black.png');
     expect(res).eql([
-      ['Black', [0, 0, 0], 0.9586],
+      ['Black', [0, 0, 0], 0.9587],
       ['DarkSlateGray', [47, 79, 79], 0.0169],
       ['White', [255, 255, 255], 0.0121],
       ['Maroon', [128, 0, 0], 0.0026],
@@ -36,6 +36,47 @@ describe('Find colors in image file', () => {
   });
 });
 
+describe('Find colors with cache in image file', () => {
+  it('test.png is SteelBlue', async () => {
+    const res = await color.guessByImage('./test/static/test.png', { useCache: true });
+    expect(res).eql([['SteelBlue', [70, 130, 180], 1]]);
+  });
+
+  it('black.png is mostly Black', async () => {
+    const res = await color.guessByImage('./test/static/black.png', { useCache: true });
+    expect(res).eql([
+      ['Black', [0, 0, 0], 0.9587],
+      ['DarkSlateGray', [47, 79, 79], 0.0169],
+      ['White', [255, 255, 255], 0.0121],
+      ['Maroon', [128, 0, 0], 0.0026],
+      ['DarkSlateBlue', [72, 61, 139], 0.0024],
+      ['Azure', [240, 255, 255], 0.0024],
+      ['Khaki', [240, 230, 140], 0.0024],
+      ['MidnightBlue', [25, 25, 112], 0.0024],
+    ]);
+  });
+});
+
+describe('Find colors with groups in image file', () => {
+  it('test.png is SteelBlue', async () => {
+    const res = await color.guessByImage('./test/static/test.png', { useGroups: true });
+    expect(res).eql([['SteelBlue', [70, 130, 180], 1]]);
+  });
+
+  it('black.png is mostly Black', async () => {
+    const res = await color.guessByImage('./test/static/black.png', { useGroups: true });
+    expect(res).eql([
+      ['Black', [0, 0, 0], 0.9587],
+      ['DarkSlateGray', [47, 79, 79], 0.0169],
+      ['White', [255, 255, 255], 0.0121],
+      ['Maroon', [128, 0, 0], 0.0026],
+      ['DarkSlateBlue', [72, 61, 139], 0.0024],
+      ['Azure', [240, 255, 255], 0.0024],
+      ['Khaki', [240, 230, 140], 0.0024],
+      ['MidnightBlue', [25, 25, 112], 0.0024],
+    ]);
+  });
+});
 describe('File by color name', () => {
   const fileName = path.join(__dirname, 'temp.jpg');
 
